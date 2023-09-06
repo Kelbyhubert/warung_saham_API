@@ -1,14 +1,17 @@
 package com.warungsaham.warungsahamappapi.user.service;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.warungsaham.warungsahamappapi.role.dao.RoleDao;
+import com.warungsaham.warungsahamappapi.role.model.Role;
 import com.warungsaham.warungsahamappapi.user.dao.UserDao;
 import com.warungsaham.warungsahamappapi.user.dto.request.NewUserReq;
 import com.warungsaham.warungsahamappapi.user.model.User;
@@ -20,21 +23,22 @@ import jakarta.transaction.Transactional;
 public class UserServiceImpl implements UserService {
 
     private UserDao userDao;
+    private RoleDao roleDao;
     private PasswordEncoder passwordEncoder;
     private ValidationService validationService;
 
 
     @Autowired
-    public UserServiceImpl(UserDao userDao , PasswordEncoder passwordEncoder , ValidationService validationService){
+    public UserServiceImpl(UserDao userDao , PasswordEncoder passwordEncoder , ValidationService validationService , RoleDao roleDao){
         this.userDao = userDao;
         this.passwordEncoder = passwordEncoder;
         this.validationService = validationService;
+        this.roleDao = roleDao;
     }
 
     @Override
     @Transactional
     public void addUser(NewUserReq newUserReq) {
-
         validationService.validate(newUserReq);
 
         if(userDao.existsByUsername(newUserReq.getUsername())){
@@ -54,6 +58,10 @@ public class UserServiceImpl implements UserService {
 
         user.setPassword(passwordEncoder.encode(newUserReq.getPassword()));
 
+        List<Role> roles = roleDao.findAllById(newUserReq.getRoleIdList());
+
+        user.setRoles(new HashSet<Role>(roles));
+        
         userDao.save(user);
 
     }

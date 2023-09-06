@@ -28,7 +28,6 @@ public class AuthServiceImpl implements AuthService{
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        // TODO Auto-generated method stub
         User user = userDao.findByUsernameOrEmail(username,username);
 
         List<GrantedAuthority> listAuthorities = user.getRoles().stream()
