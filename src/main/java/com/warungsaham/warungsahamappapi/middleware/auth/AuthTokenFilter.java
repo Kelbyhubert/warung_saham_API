@@ -20,24 +20,15 @@ import jakarta.servlet.http.HttpServletResponse;
 
 public class AuthTokenFilter extends OncePerRequestFilter {
 
+    @Autowired
     private AuthService authService;
 
-    private JwtUtils jwtUtils;
-
-    public AuthTokenFilter(){
-        
-    }
-
     @Autowired
-    public AuthTokenFilter(AuthService authService , JwtUtils jwtUtils){
-        this.authService = authService;
-        this.jwtUtils = jwtUtils;
-    }
+    private JwtUtils jwtUtils;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        // TODO Auto-generated method stub
         String jwtToken = null;
         String header = request.getHeader("Authorization");
             
@@ -58,7 +49,6 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
             }
         } catch (Exception e) {
-            // TODO: handle exception
             logger.error("Cannot set user auth {}", e);
         }
 

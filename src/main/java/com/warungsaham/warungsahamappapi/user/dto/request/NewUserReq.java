@@ -1,5 +1,7 @@
 package com.warungsaham.warungsahamappapi.user.dto.request;
 
+import java.util.List;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -7,11 +9,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 @Builder
 public class NewUserReq {
     
@@ -34,5 +38,7 @@ public class NewUserReq {
     @NotBlank
     @Size(max = 20)
     private String phoneNumber;
+
+    private List<Integer> roleIdList;
 
 }
