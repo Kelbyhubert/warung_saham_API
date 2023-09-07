@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -64,6 +67,12 @@ public class UserServiceImpl implements UserService {
         
         userDao.save(user);
 
+    }
+
+    @Override
+    public Page<User> getUsers(int pageIndex, int size) {
+        Pageable pageRequest = PageRequest.of(pageIndex, size);
+        return userDao.findAll(pageRequest);
     }
     
 }
