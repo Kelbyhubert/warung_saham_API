@@ -4,6 +4,7 @@ package com.warungsaham.warungsahamappapi.user.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.warungsaham.warungsahamappapi.role.model.Role;
 
 import jakarta.persistence.*;
@@ -19,6 +20,7 @@ public class User{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
+    @JsonIgnore
     private int id;
 
     @Column(name = "userid")
@@ -28,6 +30,7 @@ public class User{
 
     private String email;
 
+    @JsonIgnore
     private String password;
 
     @Column(name = "nama")
