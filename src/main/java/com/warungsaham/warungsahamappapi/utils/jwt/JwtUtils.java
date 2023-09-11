@@ -11,6 +11,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import com.warungsaham.warungsahamappapi.user.model.CustomUserDetail;
+
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
@@ -31,10 +33,11 @@ public class JwtUtils {
 
     public String generateJwtToken(Authentication auth){
 
-        UserDetails userDetails = (UserDetails) auth.getPrincipal();
+        CustomUserDetail userDetails = (CustomUserDetail) auth.getPrincipal();
 
         return Jwts.builder()
                 .setSubject(userDetails.getUsername())
+                .claim("user", userDetails)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(new Date().getTime() + jwtExpiredDate))
                 .signWith(key(), SignatureAlgorithm.HS256)
