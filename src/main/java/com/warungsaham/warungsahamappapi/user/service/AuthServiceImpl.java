@@ -1,6 +1,7 @@
 package com.warungsaham.warungsahamappapi.user.service;
 
 import com.warungsaham.warungsahamappapi.user.dao.UserDao;
+import com.warungsaham.warungsahamappapi.user.model.CustomUserDetail;
 import com.warungsaham.warungsahamappapi.user.model.User;
 
 import jakarta.transaction.Transactional;
@@ -34,7 +35,10 @@ public class AuthServiceImpl implements AuthService{
                                                 .map(role -> new SimpleGrantedAuthority(role.getRolename()))
                                                 .collect(Collectors.toList());
         
-        return new org.springframework.security.core.userdetails.User(user.getUsername(),user.getPassword(),true,true,true,true,listAuthorities);
+        return new CustomUserDetail(user.getUserId(), 
+                                    user.getUsername(), 
+                                    user.getPassword(), 
+                                    listAuthorities);
 
     }
 }
