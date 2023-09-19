@@ -74,5 +74,16 @@ public class UserServiceImpl implements UserService {
         Pageable pageRequest = PageRequest.of(pageIndex, size);
         return userDao.findAll(pageRequest);
     }
+
+    @Override
+    public User getUserByUserId(String userId) {
+        User user = userDao.findByUserId(userId);
+
+        if(user == null){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User Not Found");
+        }
+
+        return user;
+    }
     
 }
