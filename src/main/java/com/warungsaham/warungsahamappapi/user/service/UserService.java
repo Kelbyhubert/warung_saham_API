@@ -9,4 +9,6 @@ public interface UserService {
     public void addUser(NewUserReq newUserReq);
 
     public Page<User> getUsers(int pageIndex , int size);
+
+    public User getUserByUserId(String userId);
 }
