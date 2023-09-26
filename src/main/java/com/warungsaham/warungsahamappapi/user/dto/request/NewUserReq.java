@@ -1,5 +1,6 @@
 package com.warungsaham.warungsahamappapi.user.dto.request;
 
+import java.util.Date;
 import java.util.List;
 
 import jakarta.validation.constraints.NotBlank;
@@ -24,10 +25,6 @@ public class NewUserReq {
     private String username;
 
     @NotBlank
-    @Size(max = 100,min= 5)
-    private String password;
-
-    @NotBlank
     @Size(max = 100)
     private String email;
 
@@ -38,6 +35,8 @@ public class NewUserReq {
     @NotBlank
     @Size(max = 20)
     private String phoneNumber;
+
+    private Date dob;
 
     private List<Integer> roleIdList;
 
