@@ -3,6 +3,7 @@ package com.warungsaham.warungsahamappapi.utils.jwt;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.LinkedHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,6 +50,11 @@ public class JwtUtils {
 
     public String getUsernameFromToken(String token){
         return Jwts.parserBuilder().setSigningKey(key()).build().parseClaimsJws(token).getBody().getSubject();
+    }
+
+    public LinkedHashMap getUserDetailFromToken(String token){
+        return Jwts.parserBuilder().setSigningKey(key()).build().parseClaimsJws(token).getBody().get("user", LinkedHashMap.class);
+ 
     }
 
     public Date getExpirDateFromToken(String token){

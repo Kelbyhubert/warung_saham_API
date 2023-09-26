@@ -11,4 +11,6 @@ public interface UserService {
     public Page<User> getUsers(int pageIndex , int size);
 
     public User getUserByUserId(String userId);
+
+    public void updatePassword(String userId, String oldPassword, String newPassword);
 }

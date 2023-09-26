@@ -1,6 +1,7 @@
 package com.warungsaham.warungsahamappapi.user.model;
 
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -38,6 +39,12 @@ public class User{
 
     @Column(name = "nomorPonsel")
     private String phoneNumber;
+
+    private Date dob;
+
+    private int status;
+
+    private int active;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "tb_user_role",
