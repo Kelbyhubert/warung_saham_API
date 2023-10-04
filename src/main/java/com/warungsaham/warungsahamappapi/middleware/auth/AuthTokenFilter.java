@@ -29,29 +29,33 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        String jwtToken = null;
-        String header = request.getHeader("Authorization");
+        
+        if(!request.getRequestURL().toString().endsWith("/signin")){
             
-        if(!header.isEmpty() && header.startsWith("Bearer ")){
-            jwtToken = header.substring(7);
-        }
+            String jwtToken = null;
+            String header = request.getHeader("Authorization");
+                
 
-        try {
-            if(jwtToken != null && jwtUtils.validateJwtToken(jwtToken)){
-                String username = jwtUtils.getUsernameFromToken(jwtToken);
-
-                UserDetails userDetails = authService.loadUserByUsername(username);
-                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-
-                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-
+            if(!header.isEmpty() && header.startsWith("Bearer ")){
+                jwtToken = header.substring(7);
             }
-        } catch (Exception e) {
-            logger.error("Cannot set user auth {}", e);
-        }
 
+            try {
+                if(jwtToken != null && jwtUtils.validateJwtToken(jwtToken)){
+                    String username = jwtUtils.getUsernameFromToken(jwtToken);
+
+                    UserDetails userDetails = authService.loadUserByUsername(username);
+                    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+
+                    authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+
+                }
+            } catch (Exception e) {
+                logger.error("Cannot set user auth {}", e);
+            }
+        }
         filterChain.doFilter(request, response);
     }
     

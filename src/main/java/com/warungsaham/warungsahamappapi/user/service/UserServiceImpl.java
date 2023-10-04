@@ -76,6 +76,8 @@ public class UserServiceImpl implements UserService {
 
         user.setPassword(passwordEncoder.encode(sb.toString()));
 
+        newUserReq.getRoleIdList().add(3);
+
         List<Role> roles = roleDao.findAllById(newUserReq.getRoleIdList());
 
         user.setRoles(new HashSet<Role>(roles));
