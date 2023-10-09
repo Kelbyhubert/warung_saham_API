@@ -1,6 +1,7 @@
 package com.warungsaham.warungsahamappapi.user.service;
 
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
@@ -14,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.warungsaham.warungsahamappapi.exception.RecordExistsException;
 import com.warungsaham.warungsahamappapi.role.dao.RoleDao;
 import com.warungsaham.warungsahamappapi.role.model.Role;
 import com.warungsaham.warungsahamappapi.user.dao.UserDao;
@@ -45,12 +47,16 @@ public class UserServiceImpl implements UserService {
     public void addUser(NewUserReq newUserReq) {
         validationService.validate(newUserReq);
 
-        if(userDao.existsByUsername(newUserReq.getUsername())){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "username already registered");
-        }
+        boolean usernameExists = userDao.existsByUsername(newUserReq.getUsername());
+        boolean emailExists = userDao.existsByEmail(newUserReq.getEmail());
 
-        if(userDao.existsByEmail(newUserReq.getEmail())){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"email already registered");
+        boolean recordExists = usernameExists || emailExists;
+        
+        if(recordExists){
+            HashMap<String,Boolean> validation = new HashMap<>();
+            validation.put("usernameExist", usernameExists);
+            validation.put("emailExists", emailExists);
+            throw new RecordExistsException("Data Already Exists", validation);
         }
         
         User user = new User();
@@ -65,7 +71,6 @@ public class UserServiceImpl implements UserService {
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(user.getDob());
-
 
         StringBuilder sb = new StringBuilder();
         sb.append(calendar.get(Calendar.YEAR));
