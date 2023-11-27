@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.warungsaham.warungsahamappapi.exception.RecordExistsException;
+import com.warungsaham.warungsahamappapi.plan.model.Plan;
 import com.warungsaham.warungsahamappapi.role.dao.RoleDao;
 import com.warungsaham.warungsahamappapi.role.model.Role;
 import com.warungsaham.warungsahamappapi.user.dao.UserDao;
@@ -127,5 +128,6 @@ public class UserServiceImpl implements UserService {
         userDao.save(user);
 
     }
+
     
 }

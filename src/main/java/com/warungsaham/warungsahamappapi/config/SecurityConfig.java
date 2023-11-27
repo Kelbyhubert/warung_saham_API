@@ -65,7 +65,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(
                 auth -> auth
                         .requestMatchers("/api/v1/auth/**","/api/v1/role/**","/error").permitAll()
-                        .requestMatchers("/api/v1/user/**").hasRole("SUPER_ADMIN")
+                        .requestMatchers("/api/v1/user/**","/api/v1/premium/**").hasRole("SUPER_ADMIN")
                         .anyRequest().authenticated()
             );
 

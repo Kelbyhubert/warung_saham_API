@@ -1,11 +1,14 @@
 package com.warungsaham.warungsahamappapi.user.model;
 
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.warungsaham.warungsahamappapi.premiumsub.model.PremiumSub;
 import com.warungsaham.warungsahamappapi.role.model.Role;
 
 import jakarta.persistence.*;
@@ -52,5 +55,10 @@ public class User{
                 inverseJoinColumns = @JoinColumn(name ="roleid")
                 )
     private Set<Role> Roles = new HashSet<>();
+
+
+    @OneToMany(fetch = FetchType.LAZY, 
+                mappedBy = "user")
+    private List<PremiumSub> premiumSubList = new ArrayList<>();
 
 }
