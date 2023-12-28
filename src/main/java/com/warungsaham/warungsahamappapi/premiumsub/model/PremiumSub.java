@@ -39,6 +39,7 @@ public class PremiumSub {
     @JoinColumn(name = "userId", nullable = false)
     private User user;
 
+    @JsonIgnore
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "paymentId", referencedColumnName = "id")
     private Payment payment;

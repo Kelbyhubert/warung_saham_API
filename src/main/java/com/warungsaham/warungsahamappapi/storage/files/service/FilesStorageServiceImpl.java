@@ -26,18 +26,21 @@ public class FilesStorageServiceImpl implements FilesStorageService {
     }
 
     @Override
-    public void save(MultipartFile file) {
+    public void save(MultipartFile file, String path, String newFileName) {
         try {
-            Files.copy(file.getInputStream(), this.root.resolve(file.getOriginalFilename()));
+            Path dirPath = Paths.get(root + path);
+            Files.createDirectories(dirPath);
+            Files.copy(file.getInputStream(), dirPath.resolve(newFileName));
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
     }
 
     @Override
-    public Resource load(String filename) {
+    public Resource load(String filename , String path) {
         try {
-            Path filePath = this.root.resolve(filename);
+            Path dirPath = Paths.get(root + path);
+            Path filePath = dirPath.resolve(filename);
             Resource resource = new UrlResource(filePath.toUri());
 
             if(resource.exists() || resource.isReadable()){
@@ -60,6 +63,19 @@ public class FilesStorageServiceImpl implements FilesStorageService {
     public Stream<Path> loadAll() {
         try {
             return Files.walk(this.root, 1).filter(path -> !path.equals(this.root)).map(this.root::relativize);
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    @Override
+    public byte[] getFileByte(String filename, String path) {
+        // TODO Auto-generated method stub
+        try {
+            Path dirPath = Paths.get(root + path);
+            Path filePath = dirPath.resolve(filename);
+            return Files.readAllBytes(filePath);
+
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }

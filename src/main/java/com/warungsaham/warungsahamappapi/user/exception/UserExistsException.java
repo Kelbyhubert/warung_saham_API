@@ -1,12 +1,12 @@
-package com.warungsaham.warungsahamappapi.exception;
+package com.warungsaham.warungsahamappapi.user.exception;
 
 import java.util.HashMap;
 
-public class RecordExistsException extends RuntimeException {
+public class UserExistsException extends RuntimeException {
     
     private HashMap<String,Boolean> validations;
     
-    public RecordExistsException(String errorMessage, HashMap<String,Boolean> validations){
+    public UserExistsException(String errorMessage, HashMap<String,Boolean> validations){
         super(errorMessage);
         this.validations = validations;
     }
@@ -14,5 +14,4 @@ public class RecordExistsException extends RuntimeException {
     public HashMap<String, Boolean> getValidations() {
         return validations;
     }
-
 }
