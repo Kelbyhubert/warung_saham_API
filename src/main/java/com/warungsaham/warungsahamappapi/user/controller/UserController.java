@@ -55,8 +55,8 @@ public class UserController {
     @GetMapping(
         path = ""
     )
-    public ResponseEntity<?> getAllUser(@RequestParam int pageIndex, @RequestParam int size){
-        Page<User> users = userService.getUsers(pageIndex,size);
+    public ResponseEntity<?> getAllUser(@RequestParam int pageIndex, @RequestParam int size,@RequestParam String username){
+        Page<User> users = userService.getUsers(username,pageIndex,size);
         return ResponseEntity.ok(users);
     }
 

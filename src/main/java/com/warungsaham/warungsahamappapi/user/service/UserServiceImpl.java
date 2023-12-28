@@ -15,12 +15,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.warungsaham.warungsahamappapi.exception.RecordExistsException;
-import com.warungsaham.warungsahamappapi.plan.model.Plan;
 import com.warungsaham.warungsahamappapi.role.dao.RoleDao;
 import com.warungsaham.warungsahamappapi.role.model.Role;
 import com.warungsaham.warungsahamappapi.user.dao.UserDao;
 import com.warungsaham.warungsahamappapi.user.dto.request.NewUserReq;
+import com.warungsaham.warungsahamappapi.user.exception.UserExistsException;
+import com.warungsaham.warungsahamappapi.user.exception.UserNotFoundException;
 import com.warungsaham.warungsahamappapi.user.model.User;
 import com.warungsaham.warungsahamappapi.validation.service.ValidationService;
 
@@ -57,7 +57,7 @@ public class UserServiceImpl implements UserService {
             HashMap<String,Boolean> validation = new HashMap<>();
             validation.put("usernameExist", usernameExists);
             validation.put("emailExists", emailExists);
-            throw new RecordExistsException("Data Already Exists", validation);
+            throw new UserExistsException("Data Already Exists", validation);
         }
         
         User user = new User();
@@ -93,9 +93,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<User> getUsers(int pageIndex, int size) {
+    public Page<User> getUsers(String username,int pageIndex, int size) {
+
         Pageable pageRequest = PageRequest.of(pageIndex, size);
-        return userDao.findAll(pageRequest);
+        if(username == null || username.trim() == ""){
+            return userDao.findAll(pageRequest);
+        }
+        return userDao.findAllRecordByUsernameContaining(username, pageRequest);
     }
 
     @Override
@@ -103,7 +107,7 @@ public class UserServiceImpl implements UserService {
         User user = userDao.findByUserId(userId);
 
         if(user == null){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User Not Found");
+            throw new UserNotFoundException("User Not Found");
         }
 
         return user;
@@ -115,7 +119,7 @@ public class UserServiceImpl implements UserService {
         User user = userDao.findByUserId(userId);
 
         if(user == null){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User Not Found");
+            throw new UserNotFoundException("User Not Found");
         }
 
         if(user.getStatus() == 0 && !passwordEncoder.matches(oldPassword, user.getPassword())){

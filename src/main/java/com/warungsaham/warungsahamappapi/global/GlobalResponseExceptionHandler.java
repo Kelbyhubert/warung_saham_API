@@ -2,7 +2,6 @@ package com.warungsaham.warungsahamappapi.global;
 
 import java.util.HashMap;
 
-import org.hibernate.mapping.Set;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -13,12 +12,13 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import com.warungsaham.warungsahamappapi.error.errorresponse.ErrorResponse;
-import com.warungsaham.warungsahamappapi.exception.RecordExistsException;
+import com.warungsaham.warungsahamappapi.error.response.ErrorResponse;
 
 import jakarta.validation.ConstraintViolationException;
+import lombok.extern.slf4j.Slf4j;
 
 
+@Slf4j
 @ControllerAdvice
 public class GlobalResponseExceptionHandler extends ResponseEntityExceptionHandler  {
 
@@ -29,22 +29,21 @@ public class GlobalResponseExceptionHandler extends ResponseEntityExceptionHandl
     }
 
     @ExceptionHandler({ConstraintViolationException.class})
-    protected ResponseEntity<Object> handleValidationException(ConstraintViolationException ex){
+    protected ResponseEntity<Object> handleException(ConstraintViolationException ex){
         ErrorResponse<String> errorResponse = new ErrorResponse<String>();
         errorResponse.setData("");
         errorResponse.setMessage(ex.getMessage());
         return new ResponseEntity<Object>(errorResponse, new HttpHeaders(), HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
-    @ExceptionHandler({RecordExistsException.class})
-    protected ResponseEntity<Object> handleRecordExistsException(RecordExistsException ex){
-        ErrorResponse<HashMap<String,Boolean>> errorResponse = new ErrorResponse<HashMap<String,Boolean>>();
-        errorResponse.setData(ex.getValidations());
-        errorResponse.setMessage(ex.getMessage());
-
-        return new ResponseEntity<Object>(errorResponse, new HttpHeaders(), HttpStatus.BAD_REQUEST);
-    }
-    
+    // @ExceptionHandler({Exception.class})
+    // protected ResponseEntity<Object> handleException(Exception ex){
+    //     logger.error(ex, ex);
+    //     ErrorResponse<String> errorResponse = new ErrorResponse<String>();
+    //     errorResponse.setData("");
+    //     errorResponse.setMessage("Server Error");
+    //     return new ResponseEntity<Object>(errorResponse, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+    // }
 
     
 }

@@ -1,4 +1,4 @@
-package com.warungsaham.warungsahamappapi.premiumsub.dto;
+package com.warungsaham.warungsahamappapi.premiumsub.dto.request;
 
 import org.springframework.web.multipart.MultipartFile;
 

@@ -1,4 +1,4 @@
-package com.warungsaham.warungsahamappapi.error.errorresponse;
+package com.warungsaham.warungsahamappapi.user.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,10 +11,11 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ErrorResponse<T> {
-
-    private String message;
-    private T data;
-
+public class UserErrorResponse<T> {
     
+    private int status;
+    private T data;
+    private String message;
+
+
 }
