@@ -1,6 +1,6 @@
-package com.warungsaham.warungsahamappapi.global;
+package com.warungsaham.warungsahamappapi.global.exception;
 
-import java.util.HashMap;
+
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import com.warungsaham.warungsahamappapi.error.response.ErrorResponse;
+import com.warungsaham.warungsahamappapi.global.response.ErrorResponse;
 
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
@@ -30,10 +30,16 @@ public class GlobalResponseExceptionHandler extends ResponseEntityExceptionHandl
 
     @ExceptionHandler({ConstraintViolationException.class})
     protected ResponseEntity<Object> handleException(ConstraintViolationException ex){
-        ErrorResponse<String> errorResponse = new ErrorResponse<String>();
-        errorResponse.setData("");
+        ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setMessage(ex.getMessage());
         return new ResponseEntity<Object>(errorResponse, new HttpHeaders(), HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+
+    @ExceptionHandler({NotFoundException.class})
+    protected ResponseEntity<ErrorResponse> handleException(NotFoundException ex){
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setMessage(ex.getMessage());
+        return new ResponseEntity<ErrorResponse>(errorResponse,HttpStatus.NOT_FOUND);
     }
 
     // @ExceptionHandler({Exception.class})
