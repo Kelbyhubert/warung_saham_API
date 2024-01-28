@@ -47,7 +47,6 @@ public class UserController {
     )
     public ResponseEntity<?> updateUserPassword(@RequestHeader("Authorization") String token, @RequestBody NewPasswordReq newPasswordReq){
         String userId = (String) jwtUtils.getUserDetailFromToken(token.replace("Bearer ", "")).get("userId");
-
         userService.updatePassword(userId, newPasswordReq.getOldPassword(), newPasswordReq.getNewPassword());
         return ResponseEntity.ok("Success");
     }
