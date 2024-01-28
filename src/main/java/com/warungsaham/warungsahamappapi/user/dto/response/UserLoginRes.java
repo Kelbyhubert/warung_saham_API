@@ -11,5 +11,6 @@ import lombok.*;
 @Builder
 public class UserLoginRes {
     private String token;
+    private String refreshToken;
     private Date expiredDate;
 }

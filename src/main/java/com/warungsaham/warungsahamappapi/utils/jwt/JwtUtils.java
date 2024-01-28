@@ -31,10 +31,17 @@ public class JwtUtils {
     @Value("${waroeengsaham.jwt.jwtExpirationMs}")
     private int jwtExpiredDate;
 
+    @Value("${wareoengsaham.jwt.refreshTokenThreshold}")
+    private long refreshTokenThreshold;
+
     public String generateJwtToken(Authentication auth){
 
         CustomUserDetail userDetails = (CustomUserDetail) auth.getPrincipal();
 
+        return generateTokenFromUserDetail(userDetails);
+    }
+
+    public String generateTokenFromUserDetail(CustomUserDetail userDetails) {
         return Jwts.builder()
                 .setSubject(userDetails.getUsername())
                 .claim("user", userDetails)
@@ -59,6 +66,14 @@ public class JwtUtils {
 
     public Date getExpirDateFromToken(String token){
         return Jwts.parserBuilder().setSigningKey(key()).build().parseClaimsJws(token).getBody().getExpiration();
+    }
+
+    public boolean isTokenExpiredSoon(String token){
+        Date tokenExpiredDate = getExpirDateFromToken(token);
+        long dateDistance = tokenExpiredDate.getTime() - System.currentTimeMillis();
+
+        return refreshTokenThreshold > dateDistance;
+
     }
 
     public boolean validateJwtToken(String authToken){
