@@ -1,4 +1,4 @@
-package com.warungsaham.warungsahamappapi.user.exception;
+package com.warungsaham.warungsahamappapi.user.exception.user;
 
 
 public class UserNotFoundException extends RuntimeException {

@@ -2,6 +2,8 @@ package com.warungsaham.warungsahamappapi.stock.controller;
 
 
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
@@ -34,15 +36,15 @@ public class StockController {
         produces = MediaType.APPLICATION_JSON_VALUE,
         consumes = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<?> addNewStock(@RequestBody Stock stock){
+    public ResponseEntity<String> addNewStock(@RequestBody Stock stock){
         stockService.createNewStock(stock);
         return ResponseEntity.ok("Success");
     }
 
     @GetMapping(
-        path = ""
+        path = "/pageable"
     )
-    public ResponseEntity<?> getAllStock(@RequestParam int index, @RequestParam int size, @RequestParam String search, @RequestParam String filter) {
+    public ResponseEntity<Page<Stock>> getStockListPage(@RequestParam int index, @RequestParam int size, @RequestParam String search, @RequestParam String filter) {
         Page<Stock> stockPage = stockService.getStockList(index, size,search,filter);
         return ResponseEntity.ok(stockPage);
     }
@@ -50,10 +52,19 @@ public class StockController {
     @GetMapping(
         path = "/{code}"
     )
-    public ResponseEntity<?> getStockByCode(@PathVariable(value = "code") String code) {
+    public ResponseEntity<Stock> getStockByCode(@PathVariable(value = "code") String code) {
         Stock stock = stockService.getStock(code);
         return ResponseEntity.ok(stock);
     }
+
+    @GetMapping(
+        path = "/list"
+    )
+    public ResponseEntity<List<Stock>> getAllStock(@RequestParam String stockCodeContain) {
+        List<Stock> stockList = stockService.getStockListContainStockCode(stockCodeContain);
+        return ResponseEntity.ok(stockList);
+    }
+    
     
     
 }

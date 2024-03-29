@@ -19,8 +19,8 @@ import com.warungsaham.warungsahamappapi.role.dao.RoleDao;
 import com.warungsaham.warungsahamappapi.role.model.Role;
 import com.warungsaham.warungsahamappapi.user.dao.UserDao;
 import com.warungsaham.warungsahamappapi.user.dto.request.NewUserReq;
-import com.warungsaham.warungsahamappapi.user.exception.UserExistsException;
-import com.warungsaham.warungsahamappapi.user.exception.UserNotFoundException;
+import com.warungsaham.warungsahamappapi.user.exception.user.UserExistsException;
+import com.warungsaham.warungsahamappapi.user.exception.user.UserNotFoundException;
 import com.warungsaham.warungsahamappapi.user.model.User;
 import com.warungsaham.warungsahamappapi.validation.service.ValidationService;
 

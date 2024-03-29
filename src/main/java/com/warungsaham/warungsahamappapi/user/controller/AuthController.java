@@ -43,7 +43,7 @@ public class AuthController {
     }
     
     @PostMapping("/signin")
-    public ResponseEntity<?> authenticate(@RequestBody UserLoginReq userLoginReq){
+    public ResponseEntity<UserLoginRes> authenticate(@RequestBody UserLoginReq userLoginReq){
         Authentication authentication = authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(userLoginReq.getUsername(), userLoginReq.getPassword()));
         
@@ -60,7 +60,6 @@ public class AuthController {
 
     @PostMapping("/refresh-token")
     public ResponseEntity<?> refreshToken(HttpServletRequest request) {
-        //TODO: process POST request
         String refreshToken = request.getHeader("Refresh-Token");
 
         RefreshToken rToken = refreshTokenService.findByRefreshToken(refreshToken);
@@ -77,16 +76,11 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletRequest request) {
-        //TODO: process POST request
-
         String refreshToken = request.getHeader("Refresh-Token");
         RefreshToken rToken = refreshTokenService.findByRefreshToken(refreshToken);
         refreshTokenService.deleteRefreshToken(rToken.getUser().getId());
 
-        return ResponseEntity.ok("success");
+        return ResponseEntity.ok("Success");
     }
-    
-    
-
-    
+     
 }
