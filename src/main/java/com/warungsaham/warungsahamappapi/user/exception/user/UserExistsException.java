@@ -1,4 +1,4 @@
-package com.warungsaham.warungsahamappapi.user.exception;
+package com.warungsaham.warungsahamappapi.user.exception.user;
 
 import java.util.HashMap;
 

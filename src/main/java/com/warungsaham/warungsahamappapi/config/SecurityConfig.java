@@ -40,6 +40,7 @@ public class SecurityConfig {
         
         authenticationProvider.setUserDetailsService(authService);
         authenticationProvider.setPasswordEncoder(passwordEncoder());
+        authenticationProvider.setHideUserNotFoundExceptions(false);
 
         return authenticationProvider;
     }
@@ -64,7 +65,7 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(
                 auth -> auth
-                        .requestMatchers("/api/v1/auth/**","/api/v1/role/**","/error").permitAll()
+                        .requestMatchers("/api/v1/auth/**","/api/v1/role/**","/error","/swagger-ui/**","/api-docs/**").permitAll()
                         .requestMatchers("/api/v1/user/**","/api/v1/premium/**","/api/v1/stock/**","/api/v1/rekom/**").hasRole("SUPER_ADMIN")
                         .anyRequest().authenticated()
             );

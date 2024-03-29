@@ -66,7 +66,6 @@ public class RekomServiceImpl implements RekomService {
         rekom.setUser(user);
 
 
-
         for(TargetRequest tReq : newRekomRequest.getTargetList()) {
             RekomTarget rekomTarget = new RekomTarget();
             rekomTarget.setId(0);
@@ -86,11 +85,10 @@ public class RekomServiceImpl implements RekomService {
     @Override
     public Page<RekomListResponse> getRekomList(int index, int size, String search) {
         Pageable pageable = PageRequest.of(index, size);
-        Page<RekomListResponse> pageRekom = rekomDao.findAll(pageable).map(new Function<Rekom,RekomListResponse>() {
+        return rekomDao.findAll(pageable).map(new Function<Rekom,RekomListResponse>() {
 
             @Override
             public RekomListResponse apply(Rekom t) {
-                // TODO Auto-generated method stub
                 RekomListResponse data = new RekomListResponse();
                 data.setId(t.getId());
                 data.setCreateBy(t.getUser().getUsername());
@@ -105,14 +103,10 @@ public class RekomServiceImpl implements RekomService {
                     target += ""+ rT.getTargetFrom() + " - " + rT.getTargetTo() + " ,";
                 }
                 data.setTarget(target);
-                
-
                 return data;
             }
             
         });
-
-        return pageRekom;
     }
 
     @Override
@@ -159,7 +153,6 @@ public class RekomServiceImpl implements RekomService {
     private void updateRekomTarget(SaveUpdateRekomRequest newRekomRequest, Rekom rekom, Map<Integer, RekomTarget> rekomTargets) {
         for(TargetRequest tReq : newRekomRequest.getTargetList()) {
             int targetId = tReq.getId();
-            RekomTarget rekomTarget = new RekomTarget();
             if(rekomTargets.containsKey(targetId)){
                 RekomTarget existingTarget = rekomTargets.get(targetId);
                 existingTarget.setOrders(tReq.getOrders());
@@ -168,6 +161,7 @@ public class RekomServiceImpl implements RekomService {
                 existingTarget.setTargetFrom(tReq.getTargetFrom());
                 existingTarget.setTargetTo(tReq.getTargetTo());
             }else{
+                RekomTarget rekomTarget = new RekomTarget();
                 rekomTarget.setOrders(tReq.getOrders());
                 rekomTarget.setRekom(rekom);
                 rekomTarget.setStatus(tReq.getStatus());

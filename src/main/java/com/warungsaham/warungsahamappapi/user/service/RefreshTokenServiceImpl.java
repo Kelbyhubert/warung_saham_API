@@ -6,13 +6,15 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.warungsaham.warungsahamappapi.global.exception.NotFoundException;
 import com.warungsaham.warungsahamappapi.user.dao.RefreshTokenDao;
 import com.warungsaham.warungsahamappapi.user.dao.UserDao;
-import com.warungsaham.warungsahamappapi.user.exception.UserNotFoundException;
+import com.warungsaham.warungsahamappapi.user.exception.auth.TokenInvalidException;
+import com.warungsaham.warungsahamappapi.user.exception.user.UserNotFoundException;
 import com.warungsaham.warungsahamappapi.user.model.RefreshToken;
 import com.warungsaham.warungsahamappapi.user.model.User;
 
@@ -60,7 +62,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     public RefreshToken validateRefreshToken(RefreshToken refreshToken) {
         if(refreshToken.getExpiredDate().compareTo(Instant.now()) < 0){
             refreshTokenDao.delete(refreshToken);
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Refresh token was expired");
+            throw new TokenInvalidException("Refresh token was expired");
         }
         
         return refreshToken;
@@ -69,7 +71,6 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     @Override
     @Transactional
     public int deleteRefreshToken(int userId) {
-        // TODO Auto-generated method stub
         User user = userDao.findById(userId).orElseThrow(() -> {
             throw new UserNotFoundException("user not found");
         });

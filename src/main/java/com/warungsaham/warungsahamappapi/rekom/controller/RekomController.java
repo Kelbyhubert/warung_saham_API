@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.warungsaham.warungsahamappapi.global.response.ApiResponse;
 import com.warungsaham.warungsahamappapi.rekom.dto.request.SaveUpdateRekomRequest;
-import com.warungsaham.warungsahamappapi.rekom.dto.response.RekomDetailResponse;
 import com.warungsaham.warungsahamappapi.rekom.dto.response.RekomListResponse;
 import com.warungsaham.warungsahamappapi.rekom.model.Rekom;
 import com.warungsaham.warungsahamappapi.rekom.service.RekomService;
