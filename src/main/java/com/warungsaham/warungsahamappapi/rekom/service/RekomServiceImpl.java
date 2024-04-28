@@ -1,6 +1,7 @@
 package com.warungsaham.warungsahamappapi.rekom.service;
 
 
+import java.util.Date;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -173,6 +174,34 @@ public class RekomServiceImpl implements RekomService {
 
         rekom.getTarget().removeIf(target -> !newRekomRequest.getTargetList().stream().anyMatch(data -> data.getId() == target.getId()));
         
+    }
+
+    @Override
+    public Page<RekomListResponse> getRekomPageByFilter(int index, int size, String stockCode, Date startDate,
+            Date endDate) {
+        Pageable pageable = PageRequest.of(index, size);
+        return rekomDao.findRekomPageByFilter(stockCode,startDate,endDate,pageable).map(new Function<Rekom,RekomListResponse>() {
+
+            @Override
+            public RekomListResponse apply(Rekom t) {
+                RekomListResponse data = new RekomListResponse();
+                data.setId(t.getId());
+                data.setCreateBy(t.getUser().getUsername());
+                data.setStockCode(t.getStock().getStockCode());
+                data.setEntryFrom(t.getEntryFrom());
+                data.setEntryTo(t.getEntryTo());
+                data.setRekomDate(t.getRekomDate());
+                data.setRekomType(t.getRekomType());
+                data.setStopLoss(t.getStopLoss());
+                String target = "";
+                for (RekomTarget rT : t.getTarget()) {
+                    target += ""+ rT.getTargetFrom() + " - " + rT.getTargetTo() + " ,";
+                }
+                data.setTarget(target);
+                return data;
+            }
+            
+        });
     }
 
     

@@ -3,6 +3,8 @@ package com.warungsaham.warungsahamappapi.user.service;
 import java.time.Instant;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -22,6 +24,8 @@ import jakarta.transaction.Transactional;
 
 @Service
 public class RefreshTokenServiceImpl implements RefreshTokenService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(RefreshTokenServiceImpl.class);
 
     @Value("${waroeengsaham.jwt.refreshTokenExpirationMs}")
     private int refreshTokenExpiredDate;
@@ -61,8 +65,9 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     @Transactional
     public RefreshToken validateRefreshToken(RefreshToken refreshToken) {
         if(refreshToken.getExpiredDate().compareTo(Instant.now()) < 0){
+            LOG.error("Token Expired: {}" , refreshToken.getExpiredDate());
             refreshTokenDao.delete(refreshToken);
-            throw new TokenInvalidException("Refresh token was expired");
+            throw new TokenInvalidException("Token was Invalid");
         }
         
         return refreshToken;
@@ -80,7 +85,8 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     @Override
     public RefreshToken findByRefreshToken(String refreshToken) {
         return refreshTokenDao.findByRefreshToken(refreshToken).orElseThrow(() -> {
-            throw new NotFoundException("Refresh Token Not Found");
+            LOG.error("Token: {}" , refreshToken);
+            throw new TokenInvalidException("Token was Invalid");
         });
     }
     

@@ -3,6 +3,7 @@ package com.warungsaham.warungsahamappapi.user.dto.request;
 import java.util.Date;
 import java.util.List;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -20,20 +21,21 @@ import lombok.ToString;
 @Builder
 public class NewUserReq {
     
-    @NotBlank
-    @Size(max = 100,min = 3)
+    @NotBlank(message = "Invalid Mandatory Field")
+    @Size(max = 100,min = 3, message = "Invalid Format Mandatory Field")
     private String username;
 
-    @NotBlank
-    @Size(max = 100)
+    @NotBlank(message = "Invalid Mandatory Field")
+    @Size(min = 5, max = 100, message = "Invalid Format Mandatory Field")
+    @Email(message = "Invalid Format Mandatory Field")
     private String email;
 
-    @NotBlank
-    @Size(max = 100)
+    @NotBlank(message = "Invalid Mandatory Field")
+    @Size(min = 3, max = 100, message = "Invalid Format Mandatory Field")
     private String name;
 
-    @NotBlank
-    @Size(max = 20)
+    @NotBlank(message = "Invalid Mandatory Field")
+    @Size(min = 8,max = 20, message = "Invalid Format Mandatory Field")
     private String phoneNumber;
 
     private Date dob;
