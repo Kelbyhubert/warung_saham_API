@@ -10,8 +10,13 @@ import com.warungsaham.warungsahamappapi.rekom.dto.response.RekomListResponse;
 import com.warungsaham.warungsahamappapi.rekom.model.Rekom;
 import com.warungsaham.warungsahamappapi.rekom.service.RekomService;
 
+import jakarta.validation.Valid;
+
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,8 +40,12 @@ public class RekomController {
     }
 
     @GetMapping("")
-    public ResponseEntity<ApiResponse<Page<RekomListResponse>>> getRekomList(@RequestParam int index, @RequestParam int size, @RequestParam String search) {
-        Page<RekomListResponse> rekomPage = rekomService.getRekomList(index, size, search);
+    public ResponseEntity<ApiResponse<Page<RekomListResponse>>> getRekomList(@RequestParam int index, 
+                                                                                @RequestParam int size, 
+                                                                                @RequestParam(required = false) String code,
+                                                                                @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fromDate,
+                                                                                @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
+        Page<RekomListResponse> rekomPage = rekomService.getRekomPageByFilter(index, size, code,fromDate,endDate);
         ApiResponse<Page<RekomListResponse>> apiResponse = new ApiResponse<>();
         apiResponse.setData(rekomPage);
         apiResponse.setStatus(HttpStatus.OK.value());
@@ -54,7 +63,7 @@ public class RekomController {
     
 
     @PostMapping("/create")
-    public ResponseEntity<ApiResponse<String>> createNewRekom(@RequestBody SaveUpdateRekomRequest data) {
+    public ResponseEntity<ApiResponse<String>> createNewRekom(@Valid @RequestBody SaveUpdateRekomRequest data) {
         rekomService.createRekom(data);
         ApiResponse<String> response = new ApiResponse<>();
         response.setData("Succes");
@@ -63,7 +72,7 @@ public class RekomController {
     }
 
     @PutMapping("/{id}/update")
-    public ResponseEntity<ApiResponse<String>> updateRekomById(@PathVariable(value = "id") int id,@RequestBody SaveUpdateRekomRequest data) {
+    public ResponseEntity<ApiResponse<String>> updateRekomById(@PathVariable(value = "id") int id,@Valid @RequestBody SaveUpdateRekomRequest data) {
         rekomService.updateRekom(id,data);
         ApiResponse<String> response = new ApiResponse<>();
         response.setData("Succes");

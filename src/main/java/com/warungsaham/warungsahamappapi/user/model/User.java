@@ -50,7 +50,7 @@ public class User{
 
     private int active;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY )
     @JoinTable(name = "tb_user_role",
                 joinColumns = @JoinColumn(name = "userid"),
                 inverseJoinColumns = @JoinColumn(name ="roleid")

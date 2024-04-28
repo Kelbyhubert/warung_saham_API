@@ -22,7 +22,6 @@ public class PremiumSubController {
 
     private PremiumSubService premiumSubService;
 
-    @Autowired
     public PremiumSubController(PremiumSubService premiumSubService){
         this.premiumSubService = premiumSubService;
     }

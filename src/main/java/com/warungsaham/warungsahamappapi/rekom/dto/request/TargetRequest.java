@@ -1,5 +1,7 @@
 package com.warungsaham.warungsahamappapi.rekom.dto.request;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,11 +17,15 @@ public class TargetRequest {
 
     private int id;
     
-    private int targetFrom;
+    @NotNull(message = "Invalid Mandatory Field")
+    private Integer targetFrom;
 
-    private int targetTo;
+    @NotNull(message = "Invalid Mandatory Field")
+    private Integer targetTo;
 
-    private int orders;
+    @NotNull(message = "Invalid Mandatory Field")
+    private Integer orders;
 
-    private int status;
+    @NotNull(message = "Invalid Mandatory Field")
+    private Integer status;
 }

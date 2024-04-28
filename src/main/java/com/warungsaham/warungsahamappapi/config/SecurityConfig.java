@@ -66,7 +66,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(
                 auth -> auth
                         .requestMatchers("/api/v1/auth/**","/api/v1/role/**","/error","/swagger-ui/**","/api-docs/**").permitAll()
-                        .requestMatchers("/api/v1/user/**","/api/v1/premium/**","/api/v1/stock/**","/api/v1/rekom/**").hasRole("SUPER_ADMIN")
+                        .requestMatchers("/api/v1/user/**","/api/v1/premium/**","/api/v1/stock/**","/api/v1/rekom/**","/api/v1/insight/**").hasRole("SUPER_ADMIN")
                         .anyRequest().authenticated()
             );
 

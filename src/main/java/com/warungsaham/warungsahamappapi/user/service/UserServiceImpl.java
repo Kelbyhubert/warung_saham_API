@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import com.warungsaham.warungsahamappapi.role.dao.RoleDao;
 import com.warungsaham.warungsahamappapi.role.model.Role;
 import com.warungsaham.warungsahamappapi.user.dao.UserDao;
 import com.warungsaham.warungsahamappapi.user.dto.request.NewUserReq;
+import com.warungsaham.warungsahamappapi.user.dto.request.UpdateUserRoleReq;
 import com.warungsaham.warungsahamappapi.user.exception.user.UserExistsException;
 import com.warungsaham.warungsahamappapi.user.exception.user.UserNotFoundException;
 import com.warungsaham.warungsahamappapi.user.model.User;
@@ -92,6 +94,20 @@ public class UserServiceImpl implements UserService {
 
     }
 
+
+    @Override
+    @Transactional
+    public void updateUserRole(String userId, UpdateUserRoleReq updateUserRoleReq){
+        User user = getUser(userId);
+        
+        List<Role> roles = roleDao.findAllById(updateUserRoleReq.getRoleIdList());
+
+        user.setRoles(new HashSet<>(roles));
+
+        userDao.save(user);
+
+    }
+
     @Override
     public Page<User> getUsers(String username,int pageIndex, int size) {
 
@@ -104,33 +120,28 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUserByUserId(String userId) {
-        User user = userDao.findByUserId(userId);
-
-        if(user == null){
-            throw new UserNotFoundException("User Not Found");
-        }
-
-        return user;
+        return getUser(userId);
     }
 
     @Override
     @Transactional
     public void updatePassword(String userId, String oldPassword, String newPassword) {
-        User user = userDao.findByUserId(userId);
-
-        if(user == null){
-            throw new UserNotFoundException("User Not Found");
-        }
-
-        if(user.getStatus() == 0 && !passwordEncoder.matches(oldPassword, user.getPassword())){
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Password Invalid");
-        }
+        User user = getUser(userId);
 
         user.setPassword(passwordEncoder.encode(newPassword));
         user.setStatus(0);
 
         userDao.save(user);
 
+    }
+
+    private User getUser(String userId) {
+        User user = userDao.findByUserId(userId);
+
+        if(user == null){
+            throw new UserNotFoundException("User Not Found");
+        }
+        return user;
     }
 
     

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.warungsaham.warungsahamappapi.global.exception.NotFoundException;
 import com.warungsaham.warungsahamappapi.payment.dao.PaymentDao;
 import com.warungsaham.warungsahamappapi.payment.model.Payment;
 import com.warungsaham.warungsahamappapi.plan.dao.PlanDao;
@@ -40,7 +41,6 @@ public class PremiumSubServiceImpl implements PremiumSubService {
     private PaymentDao paymentDao;
     private FilesStorageService filesStorageService;
 
-    @Autowired
     public PremiumSubServiceImpl(UserDao userDao, PremiumSubDao premiumSubDao, PlanDao planDao, PaymentDao paymentDao, FilesStorageService filesStorageService){
         this.userDao = userDao;
         this.premiumSubDao = premiumSubDao;
@@ -55,11 +55,11 @@ public class PremiumSubServiceImpl implements PremiumSubService {
     public void createPremiumUser(String userId, int planId, MultipartFile imageUrl, String paymentType) {
         User user = userDao.findByUserId(userId);
         if(user == null){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+            throw new NotFoundException("User not found");
         }
 
         Plan plan = planDao.findById(planId)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Plan not found"));
+            .orElseThrow(() -> new NotFoundException("Plan not found"));
 
         DateFormat filePathDateFormat = new SimpleDateFormat("yyyy/MM/dd");
         String filePathDate = filePathDateFormat.format(new Date());
@@ -73,7 +73,7 @@ public class PremiumSubServiceImpl implements PremiumSubService {
 
         long planDuration = plan.getDuration() * 2629800000l;
         premiumSub.setStartDate(new Date());
-        premiumSub.setEndDate(new Date((long) (new Date().getTime() + planDuration)));
+        premiumSub.setEndDate(new Date((new Date().getTime() + planDuration)));
         
         Payment payment = new Payment();
         payment.setPaymentDate(new Date());
@@ -93,8 +93,12 @@ public class PremiumSubServiceImpl implements PremiumSubService {
     @Override
     public PaymentDataResponse getPaymentDataById(int id) {
         Optional<PremiumSub> data = premiumSubDao.findById(id);
+        if(!data.isPresent()){
+            throw new NotFoundException("Premium Sub Not Found");
+        }
+
         if(data.get().getPayment() == null){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Payment not found");
+            throw new NotFoundException("Payment not found");
         }
 
         Payment payment = data.get().getPayment();
