@@ -17,15 +17,18 @@ import lombok.Setter;
 public class NewStockRequest {
     
 
-    @NotBlank(message = "Invalid Mandatory Format Field")
-    @Size(min = 4, max = 4 , message = "Invalid Mandatory Format Field")
+    @NotBlank(message = "Invalid Mandatory Field")
+    @Size(min = 4, max = 4 , message = "Invalid Format Field")
     private String stockCode;
 
-    @NotBlank(message = "Invalid Mandatory Format Field")
-    @Size(min = 3, max = 100 , message = "Invalid Mandatory Format Field")
+    @NotBlank(message = "Invalid Mandatory Field")
+    @Size(min = 3, max = 100 , message = "Invalid Field Format")
     private String company;
 
-    @NotBlank(message = "Invalid Mandatory Format Field")
-    @Size(min = 3, max = 100 , message = "Invalid Mandatory Format Field")
+    @NotBlank(message = "Invalid Mandatory Field")
+    @Size(min = 3, max = 100 , message = "Invalid Field Format")
     private String sector;
+
+
+    
 }

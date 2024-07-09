@@ -4,17 +4,13 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import com.warungsaham.warungsahamappapi.role.dao.RoleDao;
 import com.warungsaham.warungsahamappapi.role.model.Role;
@@ -36,8 +32,6 @@ public class UserServiceImpl implements UserService {
     private PasswordEncoder passwordEncoder;
     private ValidationService validationService;
 
-
-    @Autowired
     public UserServiceImpl(UserDao userDao , PasswordEncoder passwordEncoder , ValidationService validationService , RoleDao roleDao){
         this.userDao = userDao;
         this.passwordEncoder = passwordEncoder;
@@ -50,6 +44,7 @@ public class UserServiceImpl implements UserService {
     public void addUser(NewUserReq newUserReq) {
         validationService.validate(newUserReq);
 
+        // Check User Is Exists
         boolean usernameExists = userDao.existsByUsername(newUserReq.getUsername());
         boolean emailExists = userDao.existsByEmail(newUserReq.getEmail());
 
@@ -62,6 +57,8 @@ public class UserServiceImpl implements UserService {
             throw new UserExistsException("Data Already Exists", validation);
         }
         
+
+        // Creating New User
         User user = new User();
         user.setUserId(UUID.randomUUID().toString());
         user.setUsername(newUserReq.getUsername());
@@ -72,6 +69,8 @@ public class UserServiceImpl implements UserService {
         user.setActive(1);
         user.setStatus(1);
 
+
+        // Set Password for new user base on user DOB
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(user.getDob());
 
@@ -81,14 +80,13 @@ public class UserServiceImpl implements UserService {
         sb.append(calendar.get(Calendar.DATE));
         sb.append(calendar.get(Calendar.MONTH) + 1);
 
-
         user.setPassword(passwordEncoder.encode(sb.toString()));
 
+
+        // Set Default Role to 3 / ROLE_USER
         newUserReq.getRoleIdList().add(3);
-
         List<Role> roles = roleDao.findAllById(newUserReq.getRoleIdList());
-
-        user.setRoles(new HashSet<Role>(roles));
+        user.setRoles(new HashSet<>(roles));
         
         userDao.save(user);
 
@@ -111,8 +109,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public Page<User> getUsers(String username,int pageIndex, int size) {
 
+        // Get All user with pagination
         Pageable pageRequest = PageRequest.of(pageIndex, size);
-        if(username == null || username.trim() == ""){
+        if(username == null || username.trim().equals("")){
             return userDao.findAll(pageRequest);
         }
         return userDao.findAllRecordByUsernameContaining(username, pageRequest);
@@ -127,7 +126,8 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void updatePassword(String userId, String oldPassword, String newPassword) {
         User user = getUser(userId);
-
+        
+        //update Password and set firstLogin status to 0
         user.setPassword(passwordEncoder.encode(newPassword));
         user.setStatus(0);
 
@@ -135,12 +135,15 @@ public class UserServiceImpl implements UserService {
 
     }
 
+
+    //helper function
     private User getUser(String userId) {
         User user = userDao.findByUserId(userId);
 
         if(user == null){
             throw new UserNotFoundException("User Not Found");
         }
+        
         return user;
     }
 

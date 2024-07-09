@@ -1,4 +1,4 @@
-package com.warungsaham.warungsahamappapi.user.service;
+package com.warungsaham.warungsahamappapi.user.service.refreshtoken;
 
 import com.warungsaham.warungsahamappapi.user.model.RefreshToken;
 

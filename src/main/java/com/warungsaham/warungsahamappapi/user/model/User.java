@@ -20,7 +20,9 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
+@ToString(
+    exclude = {"password"}
+)
 public class User{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -51,15 +53,15 @@ public class User{
     private int active;
 
     @ManyToMany(fetch = FetchType.LAZY )
-    @JoinTable(name = "tb_user_role",
-                joinColumns = @JoinColumn(name = "userid"),
-                inverseJoinColumns = @JoinColumn(name ="roleid")
-                )
-    private Set<Role> Roles = new HashSet<>();
+    @JoinTable(
+        name = "tb_user_role",
+        joinColumns = @JoinColumn(name = "userid"),
+        inverseJoinColumns = @JoinColumn(name ="roleid")
+    )
+    private Set<Role> roles = new HashSet<>();
 
 
-    @OneToMany(fetch = FetchType.LAZY, 
-                mappedBy = "user")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<PremiumSub> premiumSubList = new ArrayList<>();
 
 }

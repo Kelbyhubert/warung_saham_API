@@ -11,7 +11,6 @@ import com.warungsaham.warungsahamappapi.rekom.model.Rekom;
 public interface RekomService {
     
     public void createRekom(SaveUpdateRekomRequest newRekomRequest);
-    public Page<RekomListResponse> getRekomList(int index, int size, String search);
     public Page<RekomListResponse> getRekomPageByFilter(int index, int size, String stockCode, Date startDate, Date endDate);
     public void updateRekom(int rekomId, SaveUpdateRekomRequest newRekomRequest);
     public Rekom getRekomDetail(int rekomId);

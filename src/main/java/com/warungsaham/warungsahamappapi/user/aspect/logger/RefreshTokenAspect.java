@@ -17,7 +17,7 @@ public class RefreshTokenAspect {
     
     private static final Logger LOG = LoggerFactory.getLogger(RefreshTokenAspect.class);
 
-    @Pointcut("execution(* com.warungsaham.warungsahamappapi.user.service.RefreshTokenServiceImpl.*(..))")
+    @Pointcut("execution(* com.warungsaham.warungsahamappapi.user.service.refreshtoken.RefreshTokenServiceImpl.*(..))")
     public void refreshTokenServiceMethod(){};
 
     @Before("refreshTokenServiceMethod()")

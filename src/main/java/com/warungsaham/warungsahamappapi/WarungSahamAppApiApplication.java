@@ -10,7 +10,7 @@ import com.warungsaham.warungsahamappapi.storage.files.service.FilesStorageServi
 import jakarta.annotation.Resource;
 
 @EnableAspectJAutoProxy
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "com.warungsaham.warungsahamappapi")
 public class WarungSahamAppApiApplication implements CommandLineRunner {
 
 	@Resource

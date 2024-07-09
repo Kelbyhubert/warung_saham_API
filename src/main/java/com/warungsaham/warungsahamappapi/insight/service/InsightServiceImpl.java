@@ -44,6 +44,7 @@ public class InsightServiceImpl implements InsightService {
     }
 
 
+    
     @Override
     @Transactional
     public void createInsight(NewInsightRequest newInsightRequest) {
@@ -98,6 +99,16 @@ public class InsightServiceImpl implements InsightService {
 
     }
 
+
+    @Override
+    public Page<InsightDto> getListInsightPageByFilter(int index, int size, String title, String createBy,
+            Date startDate, Date endDate) {
+
+        Pageable pageable = PageRequest.of(index, size);
+        return insightDao.findInsightPageByFilter(title,createBy,startDate,endDate,pageable).map(this::mapInsightToInsightDto);
+
+    }
+
     private User getUser(String userId) {
         User user = userDao.findByUserId(userId);
 
@@ -114,9 +125,9 @@ public class InsightServiceImpl implements InsightService {
 
 
     private String saveFile(MultipartFile imgFile, int uniqueId , String title) {
+        LOG.info("Img File : {}", imgFile);
         if(imgFile == null) return null;
         
-
         DateFormat filePathDateFormat = new SimpleDateFormat("yyyy/MM/dd");
         String filePathDate = filePathDateFormat.format(new Date());
 
@@ -136,16 +147,16 @@ public class InsightServiceImpl implements InsightService {
 
 
     private InsightDto mapInsightToInsightDto(Insight insight){
-        InsightDto InsightDto = new InsightDto();
+        InsightDto insightDto = new InsightDto();
 
-        InsightDto.setId(insight.getId());
-        InsightDto.setTitle(insight.getTitle());
-        InsightDto.setCreateBy(insight.getCreateBy());
-        InsightDto.setCreateDate(insight.getCreateDate());
-        InsightDto.setUpdateBy(insight.getUpdateBy());
-        InsightDto.setUpdateDate(insight.getUpdateDate());
+        insightDto.setId(insight.getId());
+        insightDto.setTitle(insight.getTitle());
+        insightDto.setCreateBy(insight.getCreateBy());
+        insightDto.setCreateDate(insight.getCreateDate());
+        insightDto.setUpdateBy(insight.getUpdateBy());
+        insightDto.setUpdateDate(insight.getUpdateDate());
 
-        return InsightDto;
+        return insightDto;
     }
 
     private InsightDetailDto mapInsightToInsightDetailDto(Insight insight){
@@ -161,12 +172,5 @@ public class InsightServiceImpl implements InsightService {
     }
 
 
-    @Override
-    public Page<InsightDto> getListInsightPageByFilter(int index, int size, String title, String createBy,
-            Date startDate, Date endDate) {
 
-        Pageable pageable = PageRequest.of(index, size);
-        return insightDao.findInsightPageByFilter(title,createBy,startDate,endDate,pageable).map(this::mapInsightToInsightDto);
-
-    }
 }

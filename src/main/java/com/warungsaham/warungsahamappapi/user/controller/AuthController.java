@@ -1,6 +1,7 @@
 package com.warungsaham.warungsahamappapi.user.controller;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,13 +18,15 @@ import com.warungsaham.warungsahamappapi.user.dto.response.TokenRefreshResponse;
 import com.warungsaham.warungsahamappapi.user.dto.response.UserLoginRes;
 import com.warungsaham.warungsahamappapi.user.model.CustomUserDetail;
 import com.warungsaham.warungsahamappapi.user.model.RefreshToken;
-import com.warungsaham.warungsahamappapi.user.service.AuthService;
-import com.warungsaham.warungsahamappapi.user.service.RefreshTokenService;
+import com.warungsaham.warungsahamappapi.user.service.auth.AuthService;
+import com.warungsaham.warungsahamappapi.user.service.refreshtoken.RefreshTokenService;
 import com.warungsaham.warungsahamappapi.utils.jwt.JwtUtils;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
+
+// TODO : Refactor
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthController {
@@ -43,8 +46,13 @@ public class AuthController {
         this.authService = authService;
     }
     
-    @PostMapping("/signin")
+    @PostMapping(
+        path = "/signin",
+        consumes = MediaType.APPLICATION_JSON_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE    
+    )
     public ResponseEntity<ApiResponse<UserLoginRes>> authenticate(@Valid @RequestBody UserLoginReq userLoginReq){
+
         Authentication authentication = authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(userLoginReq.getUsername(), userLoginReq.getPassword()));
         
@@ -59,11 +67,15 @@ public class AuthController {
         apiResponse.setData(new UserLoginRes(jwtToken,refreshToken, jwtUtils.getExpirDateFromToken(jwtToken)));
 
         return ResponseEntity.ok(apiResponse);
+        
     }
 
-    
 
-    @PostMapping("/refresh-token")
+    @PostMapping(
+        path = "/refresh-token",
+        consumes = MediaType.APPLICATION_JSON_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE    
+    )
     public ResponseEntity<ApiResponse<TokenRefreshResponse>> refreshToken(HttpServletRequest request) {
         String refreshToken = request.getHeader("Refresh-Token");
 
@@ -83,12 +95,15 @@ public class AuthController {
 
     }
 
-    @PostMapping("/logout")
+    @PostMapping(
+        path = "/logout",
+        consumes = MediaType.APPLICATION_JSON_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
     public ResponseEntity<ApiResponse<String>> logout(HttpServletRequest request) {
         String refreshToken = request.getHeader("Refresh-Token");
         RefreshToken rToken = refreshTokenService.findByRefreshToken(refreshToken);
         refreshTokenService.deleteRefreshToken(rToken.getUser().getId());
-
 
         ApiResponse<String> apiResponse = new ApiResponse<>();
         apiResponse.setStatus(HttpStatus.OK.value());

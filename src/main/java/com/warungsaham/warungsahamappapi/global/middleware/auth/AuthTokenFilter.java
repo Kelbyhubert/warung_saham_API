@@ -1,8 +1,10 @@
-package com.warungsaham.warungsahamappapi.middleware.auth;
+package com.warungsaham.warungsahamappapi.global.middleware.auth;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -14,18 +16,18 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.warungsaham.warungsahamappapi.global.response.ErrorResponse;
-import com.warungsaham.warungsahamappapi.user.service.AuthService;
+import com.warungsaham.warungsahamappapi.user.service.auth.AuthService;
 import com.warungsaham.warungsahamappapi.utils.jwt.JwtUtils;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
 
 
-@Slf4j
 public class AuthTokenFilter extends OncePerRequestFilter {
+
+    private static final Logger LOG = LoggerFactory.getLogger(AuthTokenFilter.class);
 
     @Autowired
     private AuthService authService;
@@ -37,7 +39,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         
-        log.info(request.getRequestURL().toString());
+        LOG.info("Current Request Path : {}",  request.getRequestURL());
 
         if(request.getRequestURL().toString().contains("/auth")){
             filterChain.doFilter(request, response);
@@ -58,11 +60,11 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         String auth = request.getHeader("Authorization");
         
 
-        log.info("Token : "+ auth);
+        LOG.info("Token : {}", auth);
 
         if(auth == null){
             // auth = "";
-            log.error("Authorization Missing at header");
+            LOG.error("Authorization Missing at header");
             response.setStatus(HttpStatus.BAD_REQUEST.value());
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
                 
@@ -94,7 +96,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
             }
         } catch (Exception e) {
-            logger.error("Cannot set user auth {}", e);
+            LOG.error("Cannot set user auth : ", e);
         }
 
         filterChain.doFilter(request, response);

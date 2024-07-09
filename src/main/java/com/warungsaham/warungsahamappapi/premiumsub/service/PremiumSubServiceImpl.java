@@ -4,16 +4,14 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
-
+import java.util.UUID;
 
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.apache.tomcat.util.codec.binary.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
+
 
 import com.warungsaham.warungsahamappapi.global.exception.NotFoundException;
 import com.warungsaham.warungsahamappapi.payment.dao.PaymentDao;
@@ -63,7 +61,10 @@ public class PremiumSubServiceImpl implements PremiumSubService {
 
         DateFormat filePathDateFormat = new SimpleDateFormat("yyyy/MM/dd");
         String filePathDate = filePathDateFormat.format(new Date());
-        String filename = paymentType + "_" + user.getId() + "_" + user.getUsername() + "." + imageUrl.getOriginalFilename().substring(imageUrl.getOriginalFilename().lastIndexOf(".") + 1);
+
+        //TODO : Not optimal solution
+        // solusi sementara untuk unique file name pake uuid 
+        String filename = paymentType + "_" + user.getId() + "_" + user.getUsername() + UUID.randomUUID().toString() + "." + imageUrl.getOriginalFilename().substring(imageUrl.getOriginalFilename().lastIndexOf(".") + 1);
 
         filesStorageService.save(imageUrl,buktiTransferDirPath + filePathDate, filename);
         

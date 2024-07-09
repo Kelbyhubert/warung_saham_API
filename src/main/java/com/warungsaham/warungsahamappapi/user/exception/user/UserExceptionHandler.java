@@ -1,24 +1,30 @@
 package com.warungsaham.warungsahamappapi.user.exception.user;
 
-import java.util.HashMap;
+import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.warungsaham.warungsahamappapi.user.dto.response.UserErrorResponse;
 
-@ControllerAdvice
+@RestControllerAdvice
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class UserExceptionHandler {
+
+    private static final Logger LOG = LoggerFactory.getLogger(UserExceptionHandler.class);
     
-    @ExceptionHandler
-    public ResponseEntity<UserErrorResponse<String>> handleException(UserNotFoundException ex){
+    @ExceptionHandler({UserNotFoundException.class})
+    protected ResponseEntity<UserErrorResponse<String>> handleException(UserNotFoundException ex){
 
-        UserErrorResponse<String> errorResponse = new UserErrorResponse<String>();
+        UserErrorResponse<String> errorResponse = new UserErrorResponse<>();
 
-        errorResponse.setData("");
+        errorResponse.setError(null);
         errorResponse.setMessage(ex.getMessage());
         errorResponse.setStatus(HttpStatus.NOT_FOUND.value());
 
@@ -26,11 +32,13 @@ public class UserExceptionHandler {
 
     }
 
-    @ExceptionHandler
-    public ResponseEntity<UserErrorResponse<HashMap<String,Boolean>>> handleException(UserExistsException ex){
-        UserErrorResponse<HashMap<String,Boolean>> errorResponse = new UserErrorResponse<HashMap<String,Boolean>>();
+    @ExceptionHandler({UserExistsException.class})
+    protected ResponseEntity<UserErrorResponse<Map<String,Boolean>>> handleException(UserExistsException ex){
 
-        errorResponse.setData(ex.getValidations());
+        LOG.error("User Exists : {}", ex.getValidations());
+        UserErrorResponse<Map<String,Boolean>> errorResponse = new UserErrorResponse<>();
+        
+        errorResponse.setError(ex.getValidations());
         errorResponse.setMessage(ex.getMessage());
         errorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
 
