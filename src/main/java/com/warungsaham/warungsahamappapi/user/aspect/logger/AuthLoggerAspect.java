@@ -17,7 +17,7 @@ public class AuthLoggerAspect {
     
     private static final Logger LOG = LoggerFactory.getLogger(AuthLoggerAspect.class);
 
-    @Pointcut("execution(* com.warungsaham.warungsahamappapi.user.service.AuthServiceImpl.*(..))")
+    @Pointcut("execution(* com.warungsaham.warungsahamappapi.user.service.auth.AuthServiceImpl.*(..))")
     public void authServiceMethod(){};
 
     @Before("authServiceMethod()")

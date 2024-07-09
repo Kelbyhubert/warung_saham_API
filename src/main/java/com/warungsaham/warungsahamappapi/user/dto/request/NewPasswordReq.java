@@ -19,6 +19,6 @@ public class NewPasswordReq {
     private String oldPassword;
 
     @NotBlank(message = "Invalid Mandatory Field")
-    @Size(min = 8,max = 20, message = "Invalid Format Mandatory Field")
+    @Size(min = 8,max = 20, message = "Invalid Format")
     private String newPassword;
 }

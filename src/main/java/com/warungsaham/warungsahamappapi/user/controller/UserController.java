@@ -2,6 +2,7 @@ package com.warungsaham.warungsahamappapi.user.controller;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,7 +39,9 @@ public class UserController {
 
 
     @PostMapping(
-        path = "/add-user"
+        path = "/add-user",
+        consumes = MediaType.APPLICATION_JSON_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<ApiResponse<String>> addNewUser(@Valid @RequestBody NewUserReq newUserReq){
         
@@ -51,8 +54,11 @@ public class UserController {
         return new ResponseEntity<>(apiResponse,HttpStatus.CREATED);
     }
 
+    
     @PutMapping(
-        path = "{userId}/update"
+        path = "{userId}/update",
+        consumes = MediaType.APPLICATION_JSON_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<ApiResponse<String>> updateUserRole(@PathVariable String userId, @RequestBody UpdateUserRoleReq requestBody) {
 
@@ -65,8 +71,11 @@ public class UserController {
         return new ResponseEntity<>(apiResponse,HttpStatus.OK);
     }
 
+
     @PutMapping(
-        path = "/update-password"
+        path = "/update-password",
+        consumes = MediaType.APPLICATION_JSON_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<ApiResponse<String>> updateUserPassword(@RequestHeader("Authorization") String token, 
                                                                     @Valid @RequestBody NewPasswordReq newPasswordReq){
@@ -81,8 +90,10 @@ public class UserController {
         return ResponseEntity.ok(apiResponse);
     }
 
+
     @GetMapping(
-        path = ""
+        path = "",
+        produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<ApiResponse<Page<User>>> getAllUser(@RequestParam int pageIndex, @RequestParam int size,@RequestParam String username){
         Page<User> users = userService.getUsers(username,pageIndex,size);
@@ -94,8 +105,10 @@ public class UserController {
         return ResponseEntity.ok(apiResponse);
     }
 
+
     @GetMapping(
-        path = "/{userId}"
+        path = "/{userId}",
+        produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<ApiResponse<User>> getUserByUserId(@PathVariable(value = "userId") String userId){
         User user = userService.getUserByUserId(userId);

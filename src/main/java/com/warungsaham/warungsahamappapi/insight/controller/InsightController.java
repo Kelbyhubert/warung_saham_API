@@ -16,6 +16,7 @@ import java.util.Date;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,7 +39,8 @@ public class InsightController {
     }
 
     @GetMapping(
-        path = ""
+        path = "",
+        produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<ApiResponse<Page<InsightDto>>> getInsightPerPage(@RequestParam int index, 
                                                                             @RequestParam int size,
@@ -47,19 +49,20 @@ public class InsightController {
                                                                             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fromDate,
                                                                             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
     
-            Page<InsightDto> pageData = insightService.getListInsightPageByFilter(index, size, title,createBy,fromDate,endDate);
-        
-            ApiResponse<Page<InsightDto>> apiResponse = new ApiResponse<>();
-            apiResponse.setStatus(HttpStatus.OK.value());
-            apiResponse.setData(pageData);
+        Page<InsightDto> pageData = insightService.getListInsightPageByFilter(index, size, title,createBy,fromDate,endDate);
     
-            return ResponseEntity.ok(apiResponse);
+        ApiResponse<Page<InsightDto>> apiResponse = new ApiResponse<>();
+        apiResponse.setStatus(HttpStatus.OK.value());
+        apiResponse.setData(pageData);
+
+        return ResponseEntity.ok(apiResponse);
 
 
     }
 
     @GetMapping(
-        path = "/{id}"
+        path = "/{id}",
+        produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<ApiResponse<InsightDetailDto>> getInsightDetail(@PathVariable int id) {
         InsightDetailDto data = insightService.getInsightDetailById(id);
@@ -73,7 +76,9 @@ public class InsightController {
     
 
     @PostMapping(
-        path = "/create"
+        path = "/create",
+        consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<ApiResponse<String>> postMethodName(@Valid @ModelAttribute NewInsightRequest request) {
         insightService.createInsight(request);
@@ -86,7 +91,9 @@ public class InsightController {
     }
 
     @PutMapping(
-        path = "/{id}"
+        path = "/{id}",
+        consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<ApiResponse<String>> putMethodName(@PathVariable int id,@Valid @ModelAttribute NewInsightRequest request) {
         insightService.updateInsight(id, request);

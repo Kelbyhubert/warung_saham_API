@@ -50,7 +50,8 @@ public class StockController {
     }
 
     @GetMapping(
-        path = "/pageable"
+        path = "/pageable",
+        produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<ApiResponse<Page<Stock>>> getStockListPage(@RequestParam int index, 
                                                                     @RequestParam int size, 
@@ -60,35 +61,37 @@ public class StockController {
         Page<Stock> stockPage = stockService.getStockList(index, size,search,filter);
 
         ApiResponse<Page<Stock>> apiResponse = new ApiResponse<>();
-        apiResponse.setStatus(HttpStatus.CREATED.value());
+        apiResponse.setStatus(HttpStatus.OK.value());
         apiResponse.setData(stockPage);
         return ResponseEntity.ok(apiResponse);
     }
 
     @GetMapping(
-        path = "/{code}"
+        path = "/{code}",
+        produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<ApiResponse<Stock>> getStockByCode(@PathVariable(value = "code") String code) {
         Stock stock = stockService.getStock(code);
 
         ApiResponse<Stock> apiResponse = new ApiResponse<>();
-        apiResponse.setStatus(HttpStatus.CREATED.value());
+        apiResponse.setStatus(HttpStatus.OK.value());
         apiResponse.setData(stock);
 
-        return ResponseEntity.ok(apiResponse);
+        return new ResponseEntity<>(apiResponse,HttpStatus.OK);
     }
 
     @GetMapping(
-        path = "/list"
+        path = "/list",
+        produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<ApiResponse<List<Stock>>> getAllStock(@RequestParam String stockCodeContain) {
         List<Stock> stockList = stockService.getStockListContainStockCode(stockCodeContain);
 
         ApiResponse<List<Stock>> apiResponse = new ApiResponse<>();
-        apiResponse.setStatus(HttpStatus.CREATED.value());
+        apiResponse.setStatus(HttpStatus.OK.value());
         apiResponse.setData(stockList);
 
-        return ResponseEntity.ok(apiResponse);
+        return new ResponseEntity<>(apiResponse,HttpStatus.OK);
     }
     
     

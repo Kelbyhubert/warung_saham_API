@@ -1,4 +1,4 @@
-package com.warungsaham.warungsahamappapi.user.service;
+package com.warungsaham.warungsahamappapi.user.service.refreshtoken;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -7,12 +7,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
-import com.warungsaham.warungsahamappapi.global.exception.NotFoundException;
+
 import com.warungsaham.warungsahamappapi.user.dao.RefreshTokenDao;
 import com.warungsaham.warungsahamappapi.user.dao.UserDao;
 import com.warungsaham.warungsahamappapi.user.exception.auth.TokenInvalidException;
@@ -33,7 +30,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     private RefreshTokenDao refreshTokenDao;
     private UserDao userDao;
 
-    @Autowired
+
     public RefreshTokenServiceImpl(RefreshTokenDao refreshTokenDao, UserDao userDao) {
         this.refreshTokenDao = refreshTokenDao;
         this.userDao = userDao;
@@ -47,12 +44,14 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
         User user = userDao.findByUserId(userId);
 
         if(user == null){
-            throw new UserNotFoundException("user not found");
+            throw new UserNotFoundException("User not found");
         }
 
         // delete old refresh if user have refresh token
         refreshTokenDao.deleteByUser(user);
 
+
+        // Create New Refresh Token for user
         refreshToken.setUser(user);
         refreshToken.setExpiredDate(Instant.now().plusMillis(refreshTokenExpiredDate));
         refreshToken.setRefreshToken(UUID.randomUUID().toString());
@@ -64,12 +63,15 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     @Override
     @Transactional
     public RefreshToken validateRefreshToken(RefreshToken refreshToken) {
+        // check Token validation
         if(refreshToken.getExpiredDate().compareTo(Instant.now()) < 0){
             LOG.error("Token Expired: {}" , refreshToken.getExpiredDate());
+            // Delete the token if expired
             refreshTokenDao.delete(refreshToken);
             throw new TokenInvalidException("Token was Invalid");
         }
         
+        // return refresh token if valid
         return refreshToken;
     }
 

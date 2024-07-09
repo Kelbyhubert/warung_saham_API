@@ -2,7 +2,6 @@ package com.warungsaham.warungsahamappapi.role.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,7 +16,6 @@ public class RoleController {
 
     private RoleService roleService;
 
-    @Autowired
     public RoleController(RoleService roleService){
         this.roleService = roleService;
     }

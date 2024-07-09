@@ -35,6 +35,8 @@ public class StockServiceImpl implements StockService {
             throw new ConflictException("Stock Already Exits");
         }
 
+        //TODO tambahin validasi company name
+
         Stock newStock = new Stock();
         newStock.setStockCode(newStockRequest.getStockCode());
         newStock.setCompany(newStockRequest.getCompany());

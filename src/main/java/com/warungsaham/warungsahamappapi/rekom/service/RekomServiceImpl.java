@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,6 +31,8 @@ import jakarta.transaction.Transactional;
 @Service
 public class RekomServiceImpl implements RekomService {
 
+    private static final Logger LOG = LoggerFactory.getLogger(RekomServiceImpl.class);
+
     private RekomDao rekomDao;
     private UserDao userDao;
     private StockDao stockDao;
@@ -50,11 +54,16 @@ public class RekomServiceImpl implements RekomService {
             throw new NotFoundException("User Not Found");
         }
 
+        LOG.info("User : {}", user);
+
         Stock stock = stockDao.findByStockCode(newRekomRequest.getRekomCode());
         
         if(stock == null){
             throw new NotFoundException("Stock Not Found");
         }
+
+        LOG.info("Stock : {}", stock);
+        LOG.info("Creating New Rekom");
 
         Rekom rekom = new Rekom();
         rekom.setDescription(newRekomRequest.getDescription());
@@ -78,36 +87,10 @@ public class RekomServiceImpl implements RekomService {
             rekom.getTarget().add(rekomTarget);
         }
 
+        LOG.info("New Rekom : {}", rekom);
 
         rekomDao.save(rekom);
         
-    }
-
-    @Override
-    public Page<RekomListResponse> getRekomList(int index, int size, String search) {
-        Pageable pageable = PageRequest.of(index, size);
-        return rekomDao.findAll(pageable).map(new Function<Rekom,RekomListResponse>() {
-
-            @Override
-            public RekomListResponse apply(Rekom t) {
-                RekomListResponse data = new RekomListResponse();
-                data.setId(t.getId());
-                data.setCreateBy(t.getUser().getUsername());
-                data.setStockCode(t.getStock().getStockCode());
-                data.setEntryFrom(t.getEntryFrom());
-                data.setEntryTo(t.getEntryTo());
-                data.setRekomDate(t.getRekomDate());
-                data.setRekomType(t.getRekomType());
-                data.setStopLoss(t.getStopLoss());
-                String target = "";
-                for (RekomTarget rT : t.getTarget()) {
-                    target += ""+ rT.getTargetFrom() + " - " + rT.getTargetTo() + " ,";
-                }
-                data.setTarget(target);
-                return data;
-            }
-            
-        });
     }
 
     @Override
@@ -118,11 +101,17 @@ public class RekomServiceImpl implements RekomService {
             () -> new NotFoundException("Rekom Not Found")
         );
 
+        LOG.info("Rekom : {}", rekom);
+
         Stock stock = stockDao.findByStockCode(newRekomRequest.getRekomCode());
         
         if(stock == null){
             throw new NotFoundException("Stock Not Found");
         }
+
+        LOG.info("Stock : {}", stock);
+
+        LOG.info("Updating Rekom id : {}", rekom.getId());
 
         rekom.setDescription(newRekomRequest.getDescription());
         rekom.setEntryFrom(newRekomRequest.getEntryFrom());
@@ -135,14 +124,15 @@ public class RekomServiceImpl implements RekomService {
 
         updateRekomTarget(newRekomRequest, rekom, rekomTargets);
 
+        LOG.info("Updated Rekom : {} ", rekom);
+
         rekomDao.save(rekom);
 
     }
 
     @Override
     public Rekom getRekomDetail(int rekomId) {
-        Rekom rekom = rekomDao.findById(rekomId).orElseThrow(() -> new NotFoundException("Rekom Not Found"));
-        return rekom;
+        return rekomDao.findById(rekomId).orElseThrow(() -> new NotFoundException("Rekom Not Found"));
     }
 
     @Override
@@ -151,17 +141,30 @@ public class RekomServiceImpl implements RekomService {
         rekomDao.deleteById(rekomId);
     }
 
+
     private void updateRekomTarget(SaveUpdateRekomRequest newRekomRequest, Rekom rekom, Map<Integer, RekomTarget> rekomTargets) {
+        
+        LOG.info("Updating Rekom id {} Target" , rekom.getId());
+
+        //Delete target that not at new target
+        LOG.info("Remove non existing updated target in current target");
+        rekom.getTarget().removeIf(target -> newRekomRequest.getTargetList().stream().noneMatch(data -> data.getId() == target.getId()));
+        
+        //update target
         for(TargetRequest tReq : newRekomRequest.getTargetList()) {
             int targetId = tReq.getId();
             if(rekomTargets.containsKey(targetId)){
+                //update existed target
                 RekomTarget existingTarget = rekomTargets.get(targetId);
                 existingTarget.setOrders(tReq.getOrders());
                 existingTarget.setRekom(rekom);
                 existingTarget.setStatus(tReq.getStatus());
                 existingTarget.setTargetFrom(tReq.getTargetFrom());
                 existingTarget.setTargetTo(tReq.getTargetTo());
+
+                LOG.info("Updated Target id {} : {}", existingTarget.getId(),existingTarget);
             }else{
+                // create new target
                 RekomTarget rekomTarget = new RekomTarget();
                 rekomTarget.setOrders(tReq.getOrders());
                 rekomTarget.setRekom(rekom);
@@ -169,10 +172,13 @@ public class RekomServiceImpl implements RekomService {
                 rekomTarget.setTargetFrom(tReq.getTargetFrom());
                 rekomTarget.setTargetTo(tReq.getTargetTo());
                 rekom.getTarget().add(rekomTarget);
+
+                LOG.info("New Target {}" ,rekomTarget);
             }
         }
 
-        rekom.getTarget().removeIf(target -> !newRekomRequest.getTargetList().stream().anyMatch(data -> data.getId() == target.getId()));
+
+        LOG.info("Updated Target : {}" , rekom.getTarget());
         
     }
 
@@ -180,28 +186,43 @@ public class RekomServiceImpl implements RekomService {
     public Page<RekomListResponse> getRekomPageByFilter(int index, int size, String stockCode, Date startDate,
             Date endDate) {
         Pageable pageable = PageRequest.of(index, size);
-        return rekomDao.findRekomPageByFilter(stockCode,startDate,endDate,pageable).map(new Function<Rekom,RekomListResponse>() {
+        return rekomDao.findRekomPageByFilter(stockCode,startDate,endDate,pageable).map(this::mapRekomToRekomListResponse);
+    }
 
-            @Override
-            public RekomListResponse apply(Rekom t) {
-                RekomListResponse data = new RekomListResponse();
-                data.setId(t.getId());
-                data.setCreateBy(t.getUser().getUsername());
-                data.setStockCode(t.getStock().getStockCode());
-                data.setEntryFrom(t.getEntryFrom());
-                data.setEntryTo(t.getEntryTo());
-                data.setRekomDate(t.getRekomDate());
-                data.setRekomType(t.getRekomType());
-                data.setStopLoss(t.getStopLoss());
-                String target = "";
-                for (RekomTarget rT : t.getTarget()) {
-                    target += ""+ rT.getTargetFrom() + " - " + rT.getTargetTo() + " ,";
-                }
-                data.setTarget(target);
-                return data;
+
+    private RekomListResponse mapRekomToRekomListResponse(Rekom rekom) {
+
+        RekomListResponse data = new RekomListResponse();
+        data.setId(rekom.getId());
+        data.setCreateBy(rekom.getUser().getUsername());
+        data.setStockCode(rekom.getStock().getStockCode());
+        data.setEntryFrom(rekom.getEntryFrom());
+        data.setEntryTo(rekom.getEntryTo());
+        data.setRekomDate(rekom.getRekomDate());
+        data.setRekomType(rekom.getRekomType());
+        data.setStopLoss(rekom.getStopLoss());
+
+
+        if(rekom.getTarget().isEmpty()){
+            data.setTarget("-");
+        }else{
+            // create Target format to x - y ,x - y ,n....
+            StringBuilder targetSb = new StringBuilder();
+            for (RekomTarget target : rekom.getTarget()) {
+                targetSb.append(target.getTargetFrom());
+                targetSb.append("-");
+                targetSb.append(target.getTargetTo());
+                targetSb.append(",");
             }
-            
-        });
+    
+            targetSb.deleteCharAt(targetSb.toString().length() - 1);
+    
+            data.setTarget(targetSb.toString());
+
+        }
+
+        return data;
+
     }
 
     
